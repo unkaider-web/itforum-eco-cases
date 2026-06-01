@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Кейсы участников | Биржа решений 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #eef2f5;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #0d4a82, #1a6fb0);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 24px 24px 0 0;
+            text-align: center;
+        }
+        .header h1 { font-size: 26px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 15px; }
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        .stats {
+            background: white;
+            border-radius: 0 0 20px 20px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .stat-item { text-align: center; flex: 1; min-width: 80px; }
+        .stat-number { font-size: 26px; font-weight: 800; color: #0d4a82; }
+        .stat-label { font-size: 13px; color: #5a6e7c; }
+        .slider-container { position: relative; background: transparent; border-radius: 24px; margin-bottom: 20px; touch-action: pan-y pinch-zoom; }
+        .cases-slider { overflow: hidden; border-radius: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+        .slides-wrapper { display: flex; transition: transform 0.3s ease-out; will-change: transform; cursor: grab; }
+        .slides-wrapper:active { cursor: grabbing; }
+        .case-card { flex: 0 0 100%; background: white; border-radius: 24px; overflow: hidden; }
+        .case-header { background: #f8fafc; padding: 20px 28px; border-bottom: 3px solid #00bcd4; }
+        .case-org { font-size: 20px; font-weight: 700; color: #0d4a82; margin-bottom: 10px; line-height: 1.3; }
+        .case-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: #5a6e7c; margin-top: 6px; align-items: center; }
+        .case-tag { background: #e8f0fe; color: #0d4a82; padding: 4px 12px; border-radius: 30px; font-size: 12px; font-weight: 600; }
+        .case-tag-online {
+            background: #2e7d32;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .case-body { padding: 24px 28px; }
+        .case-section { margin-bottom: 22px; }
+        .case-section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #0d4a82; margin-bottom: 8px; }
+        .case-section-text { font-size: 15px; line-height: 1.5; color: #1e2a3a; background: #f9fbfd; padding: 14px 18px; border-radius: 16px; border-left: 3px solid #00bcd4; white-space: pre-wrap; word-break: break-word; }
+        .contact-block { background: #e8f2f9; border-radius: 16px; padding: 20px; margin: 20px 24px 24px 24px; border-left: 4px solid #00bcd4; }
+        .contact-block h4 { color: #0d4a82; margin-bottom: 12px; font-size: 16px; }
+        .contact-item { margin-bottom: 8px; font-size: 14px; line-height: 1.4; }
+        .qr-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 6px; }
+        #qrcode { background: white; padding: 8px; border-radius: 12px; border: 1px solid #cbd5e1; display: inline-block; }
+        .contact-link { color: #0d4a82; text-decoration: none; font-weight: 500; }
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: white; border: none; width: 48px; height: 48px; border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; z-index: 10; font-size: 28px; color: #0d4a82; font-weight: bold;
+            touch-action: manipulation;
+        }
+        .nav-btn:hover { background: #0d4a82; color: white; }
+        .nav-left { left: -20px; }
+        .nav-right { right: -20px; }
+        .dots { display: flex; justify-content: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+        .dot { width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .dot.active { background: #0d4a82; width: 28px; border-radius: 10px; }
+        .footer-note { text-align: center; margin-top: 30px; padding: 16px; background: #e6eef5; border-radius: 20px; color: #2c5a7a; font-size: 13px; }
+        @media (max-width: 700px) {
+            body { padding: 20px 12px; }
+            .case-header { padding: 16px 20px; }
+            .case-org { font-size: 18px; }
+            .case-body { padding: 20px; }
+            .nav-btn { width: 40px; height: 40px; font-size: 24px; }
+            .nav-left { left: -12px; }
+            .nav-right { right: -12px; }
+            .contact-block { margin: 16px; }
+            .stat-item { min-width: 60px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📋 Кейсы участников</h1>
+        <p>Экспертная сессия «Применение ДЗЗ, БАС и ИИ в природоохранной деятельности»<br>Биржа решений — 18 июня 2026, Ханты-Мансийск</p>
+        <div class="badge">Поступившие заявки (полные тексты)</div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item"><div class="stat-number" id="totalCasesCount">0</div><div class="stat-label">всего кейсов</div></div>
+        <div class="stat-item"><div class="stat-number" id="roivCount">0</div><div class="stat-label">РОИВ</div></div>
+        <div class="stat-item"><div class="stat-number" id="moCount">0</div><div class="stat-label">МО</div></div>
+        <div class="stat-item"><div class="stat-number" id="foivCount">0</div><div class="stat-label">ФОИВ</div></div>
+        <div class="stat-item"><div class="stat-number" id="tekCount">0</div><div class="stat-label">ТЭК</div></div>
+        <div class="stat-item"><div class="stat-number" id="onlineCount">0</div><div class="stat-label">очных участников</div></div>
+    </div>
+
+    <div class="slider-container">
+        <button class="nav-btn nav-left" id="prevBtn">‹</button>
+        <button class="nav-btn nav-right" id="nextBtn">›</button>
+        <div class="cases-slider" id="casesSlider">
+            <div class="slides-wrapper" id="slidesWrapper"></div>
+        </div>
+    </div>
+    <div class="dots" id="dotsContainer"></div>
+    <div class="footer-note">
+        📌 По вопросам участия в экспертной сессии обращаться к Носкову Сергею Анатольевичу: +7 (3467) 388-790 (доб. 5656), NoskovSA@admhmao.ru
+    </div>
+</div>
+
+<script>
+    // ----------------------------------------------------------------------
+    // ВСЕ КЕЙСЫ (РОИВ, МО, ФОИВ, ТЭК реальные, ТЭК образцовые)
+    // ----------------------------------------------------------------------
+    const allCases = [
+        // ---------- РОИВ, МО, ФОИВ (из предыдущих файлов) ----------
+        { org: "Министерство природных ресурсов и экологии Республики Коми", type: "РОИВ", online: "Нет", title: "Трудности определения земельного участка для обустройства мест накопления ТКО", desc: "Определять земельные участки, на которых возможно обустраивать места накопления твердых коммунальных отходов с учетом санитарных разрывов. Технически и экономически целесообразнее обустраивать места накопления ТКО. Администрации ссылаются на финансовые трудности. Необходимо упростить процесс с помощью IT и ИИ.", geo: "Городской округ «Сыктывкар»", methods: "Комиссионный осмотр. Постановление Правительства РК от 15.06.2017 N 302 допускает погрузку ТКО без организации мест накопления. Отсутствие возможности подтверждается актом комиссии.", limits: "Затягиваются сроки. Необходимо созвать комиссию, осуществить натурный осмотр, составить акт.", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Херсонской области", type: "РОИВ", online: "Нет", title: "Сохранение лесных насаждений", desc: "Оценивать степень восстановления лесов после пожаров.", geo: "Земли лесного фонда Херсонской области", methods: "Объезд территории лесничеств сотрудниками", limits: "Невозможность охватить всю территорию.", wishes: "Разработка систем мониторинга с помощью БПЛА и ИИ" },
+        { org: "ГБУ РД «Дирекция ООПТ, охраны животного мира и водных биоресурсов»", type: "РОИВ", online: "Да", title: "Учетные мероприятия", desc: "Учет численности диких животных (тур, кабан, косуля).", geo: "Республика Дагестан", methods: "Зимний маршрутный учёт, учёт в местах искусственных концентраций", limits: "Ограниченность данных, зависимость от условий", wishes: "" },
+        { org: "Государственный комитет Республики Татарстан по биологическим ресурсам", type: "РОИВ", online: "Да", title: "Внедрение БАС и ИИ в мониторинг охотничьих угодий и ООПТ", desc: "Автоматический анализ изображений с БАС для выявления браконьерства, рубок, карьеров. Формирование отчётов с геопривязкой нарушений.", geo: "Охотничьи угодья и ООПТ Татарстана", methods: "Контрольные (надзорные) мероприятия инспекторов", limits: "Отсутствие автоматизации, большие временные затраты", wishes: "Интеграция БАС и ИИ в единый цифровой контур" },
+        { org: "Министерство природных ресурсов и экологии Саратовской области", type: "РОИВ", online: "Нет", title: "Мониторинг пожарной опасности в лесах", desc: "Выявление лесных пожаров, контроль тушения, постпожарные обследования.", geo: "Лесной фонд Саратовской области (647 971 га)", methods: "Наземное патрулирование, визуальные полёты БВС", limits: "Малая зона покрытия, зависимость от погоды", wishes: "" },
+        { org: "Министерство природопользования и экологии Республики Башкортостан", type: "РОИВ", online: "Нет", title: "Выявление загрязнений окружающей среды", desc: "Выявлять загрязнения на ранней стадии.", geo: "Республика Башкортостан", methods: "Рейдовые осмотры, выездные обследования", limits: "Отсутствие финансирования, низкая оперативность", wishes: "" },
+        { org: "Департамент информационных технологий и цифрового развития Курганской области", type: "РОИВ", online: "Нет", title: "Мониторинг лесных биоресурсов (копытные животные)", desc: "Автоматическое выявление копытных животных для мониторинга численности.", geo: "Курганская область", methods: "Плановые объезды инспекторов и егерей", limits: "Редкая периодичность, зависимость от погоды", wishes: "Автоматическое формирование отчетов по муниципальным округам" },
+        { org: "Департамент информационных технологий и цифрового развития Курганской области", type: "РОИВ", online: "Нет", title: "Мониторинг лесных массивов региона", desc: "Автоматическое выявление свалок, незаконной вырубки, костров, усыхания деревьев.", geo: "Лесные массивы Курганской области", methods: "Плановые объезды, обработка жалоб", limits: "Редкая периодичность, невозможность охвата", wishes: "Автоматическая классификация, экспорт в CSV, отчёты по периодам" },
+        { org: "Министерство природных ресурсов и экологии Калужской области", type: "РОИВ", online: "Нет", title: "Выявление незаконных рубок", desc: "В реальном времени сообщать о нарушениях с указанием координат.", geo: "Лесной фонд Калужской области", methods: "Регулярное патрулирование лесов", limits: "Невозможно охватить всю территорию", wishes: "Легкость и доступность программы" },
+        { org: "Министерство охраны окружающей среды Кировской области", type: "РОИВ", online: "Нет", title: "Автоматический контроль за отходами деревообработки", desc: "Дистанционное выявление нарушений с помощью БАС и ИИ. Интеграция с ЕГРН.", geo: "Кировская область", methods: "Облёт территории с БАС, ручной анализ", limits: "Доступ на промплощадки запрещён, зависимость от погоды", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Республики Коми", type: "РОИВ", online: "Нет", title: "Выявление несанкционированных свалок и источников выбросов", desc: "Выявление свалок в труднодоступных местах, фиксация источников выбросов.", geo: "Республика Коми", methods: "Выездные обследования", limits: "Невозможно охватить труднодоступные территории", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Омской области", type: "РОИВ", online: "Да", title: "Анализ отчетов ПЭК", desc: "Анализ отчетов производственного экологического контроля для выявления индикаторов риска.", geo: "Омская область", methods: "Обработка отчетов вручную, выборочно", limits: "Невозможно обработать все отчёты", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Калининградской области", type: "РОИВ", online: "Нет", title: "Применение БПЛА при лесной охране", desc: "Выявление незаконных рубок, навалов мусора, нарушений пожарной безопасности.", geo: "Лесной фонд Калининградской области (270 тыс. га)", methods: "Наземное патрулирование", limits: "Невозможность охвата всей территории", wishes: "" },
+        { org: "Администрация города Нижневартовска", type: "МО", online: "Нет", title: "Мониторинг маршрутов мусоровозов", desc: "Создание системы мониторинга маршрутов мусоровозов с определением времени прибытия к площадкам ТКО.", geo: "Нижневартовск", methods: "График без указания времени, группа в мессенджере", limits: "Нет точного времени прибытия", wishes: "Пример «Умный транспорт»" },
+        { org: "Администрация города Нижневартовска", type: "МО", online: "Нет", title: "Выявление недобросовестных транспортировщиков отходов", desc: "Разработка ПО для определения маршрута транспорта с отходами по камерам видеонаблюдения.", geo: "Нижневартовск", methods: "Обработка обращений граждан", limits: "Нет полномочий для оперативного реагирования", wishes: "Удобный интерфейс для мониторинга" },
+        { org: "Министерство природы, экологии и недропользования Запорожской области", type: "РОИВ", online: "Нет", title: "Внедрение ИИ в экологический надзор", desc: "ИИ для аналитики, отчетности, составления постановлений, распознавания объектов по снимкам.", geo: "Запорожская область", methods: "Ручная обработка", limits: "Полное отсутствие автоматизации", wishes: "" },
+        { org: "Администрация Советского района ХМАО-Югры", type: "МО", online: "Да", title: "Ликвидация свалок отходов лесопиления", desc: "Предупреждение свалок, утилизация старых отходов (с 70-х годов).", geo: "Советский район", methods: "Обработка обращений граждан, осмотр территории", limits: "Большие площади, старые отходы", wishes: "Ждём реальных решений" },
+        { org: "Комитет государственного экологического надзора Ленинградской области", type: "РОИВ", online: "Да", title: "Выявление незаконного пользования недрами", desc: "Автоматическое выявление незаконной добычи ОПИ с помощью ДЗЗ. Интеграция с ФГИС АСЛН, ЕГРН.", geo: "Ленинградская область", methods: "Плановые объезды инспекторами", limits: "Значительные временные и материальные затраты", wishes: "Экспорт координат незаконных выработок" },
+        { org: "Министерство природных ресурсов и экологии Республики Коми", type: "РОИВ", online: "Нет", title: "Контроль лесного фонда и недропользования на ООПТ", desc: "Выявление незаконных рубок и карьеров на ООПТ с помощью ДЗЗ и ИИ.", geo: "Республика Коми, ООПТ", methods: "Контрольно-надзорные мероприятия, авиапатрулирование", limits: "Юридическая сила данных, малый размер нарушений", wishes: "" },
+        { org: "Администрация Кондинского района", type: "МО", online: "Нет", title: "Мониторинг отходов на контейнерных площадках", desc: "Распознавание отходов (ветки, строймусор, покрышки). Оповещение должностных лиц.", geo: "Кондинский район", methods: "Объезд территории 1-2 раза в месяц", limits: "Нехватка сотрудников", wishes: "" },
+        { org: "администрация города Радужный", type: "МО", online: "Нет", title: "Экологический мониторинг", desc: "Внедрение системы мониторинга на базе ДЗЗ, БАС и ИИ.", geo: "городской округ Радужный", methods: "Обработка жалоб, визуальный контроль", limits: "Редкая периодичность", wishes: "" },
+        { org: "администрация Белоярского района", type: "МО", online: "Нет", title: "Контроль заготовки кедровой шишки", desc: "Контроль сбора шишки, снижение незаконной добычи.", geo: "Белоярский район", methods: "Существует проблема бесконтрольной деятельности", limits: "Браконьеры повреждают деревья", wishes: "" },
+        { org: "Администрация Кондинского района", type: "МО", online: "Нет", title: "Выявление рецидивных свалок", desc: "Космические снимки с выделением новых свалок. Оповещение инспекторов.", geo: "Кондинский район", methods: "Рассмотрение жалоб, попытки установки камер", limits: "Камеры выводятся из строя, нет связи", wishes: "" },
+        { org: "Министерство экологии Челябинской области", type: "РОИВ", online: "Да", title: "Контроль гидрометеоугроз", desc: "Оперативные данные о гидрометеообстановке, модель распространения паводка.", geo: "Челябинская область", methods: "Выезд сотрудников для ручного замера", limits: "Редкая периодичность", wishes: "" },
+        { org: "Министерство экологии Челябинской области", type: "РОИВ", online: "Да", title: "Мониторинг загрязнения воздуха (машинное зрение)", desc: "Фиксация работы источников выбросов, выявление дыма, сверхнормативных выбросов.", geo: "Челябинск", methods: "Визуальный осмотр, выездные проверки", limits: "Редкая периодичность", wishes: "Учёт сложных случаев" },
+        { org: "Министерство природных ресурсов и экологии Магаданской области", type: "РОИВ", online: "Нет", title: "Мониторинг водных объектов", desc: "Наблюдение за водными объектами, водоохранными зонами, ГТС с помощью ДЗЗ и БАС.", geo: "Магаданская область", methods: "Визуальное наблюдение раз в год", limits: "Отсутствие постоянного наблюдения", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Магаданской области", type: "РОИВ", online: "Нет", title: "Мониторинг возникновения свалок", desc: "Обследование селитебной зоны, дорожной сети, промплощадей на предмет свалок.", geo: "Магаданская область", methods: "Визуальное наблюдение раз в год", limits: "Невозможность своевременного выявления", wishes: "" },
+        { org: "Администрация Нижневартовского района", type: "МО", online: "Да", title: "Муниципальный земельный контроль", desc: "Выявление неиспользуемых и самовольно занятых участков.", geo: "Территории муниципальных образований", methods: "Выездные обследования", limits: "Зависимость от погоды, труднодоступность", wishes: "" },
+        { org: "Отдел госконтроля по ХМАО-Югре Нижнеобского ТУ Росрыболовства", type: "ФОИВ", online: "Да", title: "БАС для мониторинга нарушений в рыболовстве", desc: "Выявление нарушений законодательства о рыболовстве на водных объектах.", geo: "Реки Обь, Иртыш, Конда, Северная Сосьва", methods: "Рейды госинспекторов", limits: "Невозможно охватить большие расстояния", wishes: "Предложения по применению БАС" },
+        { org: "МКУ \"УГЗиП г.Урай\"", type: "МО", online: "Нет", title: "Выявление и мониторинг свалок", desc: "Выявлять свалки на ранней стадии.", geo: "г.Урай, городские леса", methods: "Инвентаризация, обработка жалоб", limits: "", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Псковской области", type: "РОИВ", online: "Нет", title: "Выявление сбросов сточных вод", desc: "Автоматическое выявление несанкционированных сбросов сточных вод.", geo: "Псковская область", methods: "Плановые выезды, жалобы граждан", limits: "Невозможность охвата", wishes: "" },
+        { org: "Министерство природных ресурсов и экологии Тверской области", type: "РОИВ", online: "Нет", title: "Выявление свалок отходов", desc: "Привлечение виновных к ответственности с помощью камер фото-видеофиксации.", geo: "Тверская область", methods: "Обработка жалоб, претензионная работа", limits: "Ограниченность сроков", wishes: "" },
+        { org: "министерство лесного хозяйства Хабаровского края", type: "РОИВ", online: "Нет", title: "ДЗЗ", desc: "Выявление лесоизменений (незаконные рубки).", geo: "Лесной фонд Хабаровского края (75 млн га)", methods: "Ручное сравнение космоснимков", limits: "Выявляются рубки давностью от года", wishes: "Внедрение во все регионы" },
+        { org: "Министерство природных ресурсов и лесного комплекса Красноярского края", type: "РОИВ", online: "Нет", title: "Мониторинг популяции дикого северного оленя", desc: "Определение численности таймыро-эвенкийской популяции.", geo: "Таймыр, Эвенкия (20-25 млн га)", methods: "Авиаучёт раз в 3-7 лет", limits: "Редкая периодичность, высокая стоимость", wishes: "Применение ДЗЗ, БАС и ИИ" },
+        { org: "Департамент природных ресурсов и экологии ЯНАО", type: "РОИВ", online: "Да", title: "Формирование индикаторов риска", desc: "Алгоритм для разработки индикаторов риска в экологическом надзоре.", geo: "РФ", methods: "Накопленный опыт инспекторов", limits: "Строгие критерии по 248-ФЗ", wishes: "Алгоритм для разных видов надзора" },
+        // ---------- ТЭК реальные заявки ----------
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Да", title: "Лесовосстановление", desc: "Считать высаженные лесные культуры на пробных площадях, оценивать приживаемость.", geo: "ХМАО, Урайское лесничество", methods: "Замер гармином, подсчёт на пробных площадях", limits: "Трудоемкий процесс", wishes: "" },
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Нет", title: "Детектирование возгораний и утечек нефти и газа", desc: "Облёты территории беспилотником для выявления возгораний и утечек.", geo: "Восточная и Западная Сибирь", methods: "Ручной облёт БПЛА", limits: "Редкая периодичность, зависимость от погоды", wishes: "" },
+        // ---------- ТЭК образцовые кейсы (из deepseek_html_20260528_00653c) ----------
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Да", title: "Обнаружение утечек нефти на трубопроводах", desc: "Обеспечить своевременное обнаружение мест утечек нефти. Система датчиков давления даёт погрешность до 500 метров, наземные обходы раз в 3 дня.", geo: "Приобское месторождение, 120 км трубопроводов", methods: "Датчики давления, наземные обходы, спутниковый контроль", limits: "Погрешность до 500 м, малые утечки незаметны", wishes: "Работа без сотовой связи, нейросеть на борту БАС" },
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Да", title: "Ликвидация разливов нефти на почве", desc: "Оперативное получение информации о границах разлива. Разведка на вездеходах занимает 3-6 часов.", geo: "Приобское месторождение, удалённость до 200 км", methods: "Выезд наземной разведки, облёт на вертолёте", limits: "До 70% времени уходит на уточнение границ", wishes: "Автоматическая карта загрязнения, работа в туман и до -40°C" },
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Нет", title: "Ликвидация разливов нефти на воде", desc: "Обнаружение и отслеживание нефтяных пятен на водных объектах. Пятно быстро дрейфует.", geo: "Акватория реки Обь", methods: "Патрулирование на катерах, вертолётная разведка", limits: "Зависимость от погоды, туман", wishes: "Экспорт координат, прогноз дрейфа" },
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Да", title: "Мониторинг рекультивации загрязнённых земель", desc: "Оценка восстановления почв и растительности. Точечные пробы дают «слепые зоны».", geo: "10 участков в Нефтеюганском районе, 120 га", methods: "Отбор проб (20-30 точек), лабораторный анализ", limits: "Стоимость 500 тыс. руб./год, слепые зоны", wishes: "Загрузка архивных снимков, автогенерация отчётов" },
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Нет", title: "Выявление незаконных врезок в трубопроводы", desc: "Автоматическое обнаружение врезок. Врезки находят только после падения давления.", geo: "Магистральный нефтепровод (Сургут-Тюмень), 250 км", methods: "Наземное патрулирование 3 раза в неделю, авиапатруль 2 раза в месяц", limits: "Обнаружение через 5-30 дней", wishes: "Интеграция с системой управления нарядами" },
+        { org: "Предприятие ТЭК", type: "ТЭК", online: "Нет", title: "Мониторинг качества атмосферного воздуха на месторождениях", desc: "Выявление выбросов метана. Тысячи источников, обойти всё руками невозможно.", geo: "Нижневартовский район, радиус 10 км", methods: "Переносные газоанализаторы, стационарные датчики (5-10 точек)", limits: "Обходы охватывают не более 5% площади", wishes: "Автоматическая отчётность для ESG" }
+    ];
+
+    // Функция веса (длина текста)
+    function getCaseWeight(c) {
+        return (c.desc || "").length + (c.title || "").length + (c.methods || "").length + (c.limits || "").length + (c.wishes || "").length;
+    }
+
+    // Сортировка: сначала очные (online === "Да") с большим весом, потом заочные
+    const sortedCases = [...allCases].sort((a,b) => {
+        const aOnline = a.online === "Да";
+        const bOnline = b.online === "Да";
+        if (aOnline !== bOnline) return aOnline ? -1 : 1;
+        return getCaseWeight(b) - getCaseWeight(a);
+    });
+
+    let currentIndex = 0;
+    let slidesWrapper = document.getElementById('slidesWrapper');
+    let dotsContainer = document.getElementById('dotsContainer');
+    const sliderElement = document.getElementById('casesSlider');
+    let totalCases = sortedCases.length;
+
+    function renderStats() {
+        document.getElementById('totalCasesCount').innerText = totalCases;
+        let roiv = 0, mo = 0, foiv = 0, tek = 0, online = 0;
+        sortedCases.forEach(c => {
+            if (c.type === 'РОИВ') roiv++;
+            if (c.type === 'МО') mo++;
+            if (c.type === 'ФОИВ') foiv++;
+            if (c.type === 'ТЭК') tek++;
+            if (c.online === 'Да') online++;
+        });
+        document.getElementById('roivCount').innerText = roiv;
+        document.getElementById('moCount').innerText = mo;
+        document.getElementById('foivCount').innerText = foiv;
+        document.getElementById('tekCount').innerText = tek;
+        document.getElementById('onlineCount').innerText = online;
+    }
+
+    function buildSlides() {
+        slidesWrapper.innerHTML = '';
+        sortedCases.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'case-card';
+            let wishesHtml = '';
+            if (c.wishes && c.wishes.trim() !== '' && c.wishes !== '—') {
+                wishesHtml = `<div class="case-section"><div class="case-section-title">Пожелания к исполнителям</div><div class="case-section-text">${escapeHtml(c.wishes)}</div></div>`;
+            }
+            const onlineTagHtml = (c.online === "Да") ? '<span class="case-tag-online">🌟 очное участие: Да</span>' : `<span class="case-tag">очное участие: ${c.online}</span>`;
+            card.innerHTML = `
+                <div class="case-header">
+                    <div class="case-org">${escapeHtml(c.org)}</div>
+                    <div class="case-meta"><span class="case-tag">${c.type}</span>${onlineTagHtml}</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-section"><div class="case-section-title">Название кейса</div><div class="case-section-text">${escapeHtml(c.title)}</div></div>
+                    <div class="case-section"><div class="case-section-title">Что нужно сделать?</div><div class="case-section-text">${escapeHtml(c.desc)}</div></div>
+                    <div class="case-section"><div class="case-section-title">География применения</div><div class="case-section-text">${escapeHtml(c.geo)}</div></div>
+                    <div class="case-section"><div class="case-section-title">Используемые методы</div><div class="case-section-text">${escapeHtml(c.methods)}</div></div>
+                    <div class="case-section"><div class="case-section-title">Ограничения метода</div><div class="case-section-text">${escapeHtml(c.limits)}</div></div>
+                    ${wishesHtml}
+                </div>
+            `;
+            slidesWrapper.appendChild(card);
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m){
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function updateSlider() { slidesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`; updateDots(); }
+    function updateDots() { document.querySelectorAll('.dot').forEach((dot, idx) => { dot.classList.toggle('active', idx === currentIndex); }); }
+    function createDots() {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalCases; i++) {
+            const dot = document.createElement('div'); dot.classList.add('dot'); if (i === currentIndex) dot.classList.add('active');
+            dot.addEventListener('click', () => { currentIndex = i; updateSlider(); });
+            dotsContainer.appendChild(dot);
+        }
+    }
+    function nextSlide() { currentIndex = (currentIndex + 1) % totalCases; updateSlider(); }
+    function prevSlide() { currentIndex = (currentIndex - 1 + totalCases) % totalCases; updateSlider(); }
+
+    // Swipe logic
+    let touchStartX = 0, touchStartY = 0;
+    sliderElement.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    sliderElement.addEventListener('touchend', (e) => {
+        const deltaX = e.changedTouches[0].screenX - touchStartX;
+        const deltaY = e.changedTouches[0].screenY - touchStartY;
+        if (Math.abs(deltaX) > 30 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX > 0) prevSlide(); else nextSlide();
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.getElementById('prevBtn').addEventListener('click', prevSlide);
+    document.getElementById('nextBtn').addEventListener('click', nextSlide);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    renderStats(); buildSlides(); createDots(); updateSlider();
+
+    // QR-код
+    new QRCode(document.getElementById("qrcode"), {
+        text: "https://max.ru/join/v7XFV-ztHrMfmQfhbCKupw5YyIu6wqRdnfvZ5zH8p0w",
+        width: 100, height: 100,
+        colorDark: "#0d4a82", colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+</script>
+</body>
+</html>
